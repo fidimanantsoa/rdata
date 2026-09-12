@@ -1,0 +1,47 @@
+{
+  "count": 4,
+  "took": 9,
+  "links": {"self": "https://api.reliefweb.int/1/reports?query%5Bvalue%5D=Madagascar"},
+  "data": [
+    {
+      "id": 8900121,
+      "score": 1.0,
+      "fields": {
+        "title": "Évaluation finale du projet d'appui à la résilience des ménages ruraux – rapport",
+        "url_alias": "/report/8900121",
+        "date": {"created": "2026-09-08T10:00:00+00:00"},
+        "source": {"shortname": "FIDA", "name": "International Fund for Agricultural Development"}
+      }
+    },
+    {
+      "id": 8900098,
+      "score": 0.9,
+      "fields": {
+        "title": "Madagascar : note de conjoncture économique et perspectives 2026",
+        "url_alias": "/report/8900098",
+        "date": {"created": "2026-09-06T09:30:00+00:00"},
+        "source": {"shortname": "Banque mondiale", "name": "World Bank"}
+      }
+    },
+    {
+      "id": 8900076,
+      "score": 0.8,
+      "fields": {
+        "title": "Impact evaluation brief – cash transfer programme in the Grand Sud East",
+        "url_alias": "/report/8900076",
+        "date": {"created": "2026-09-04T13:00:00+00:00"},
+        "source": {"shortname": "UNICEF Office of Research", "name": "UNICEF Innocenti"}
+      }
+    },
+    {
+      "id": 8900054,
+      "score": 0.7,
+      "fields": {
+        "title": "Enquête sur la sécurité alimentaire – résultats de la collecte de données round 5",
+        "url_alias": "/report/8900054",
+        "date": {"created": "2026-09-02T15:00:00+00:00"},
+        "source": {"shortname": "FEWS NET", "name": "Famine Early Warning Systems Network"}
+      }
+    }
+  ]
+}

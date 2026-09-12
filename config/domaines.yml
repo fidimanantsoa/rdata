@@ -1,0 +1,213 @@
+# ============================================================================
+# DOMAINES DE VEILLE & MOTEUR DE CLASSIFICATION
+# ============================================================================
+# Chaque item collecté est comparé aux listes de mots-clés :
+#   - un mot-clé "fort" dans le TITRE      vaut ponderations.fort x ponderations.titre
+#   - un mot-clé "moyen" dans le TITRE     vaut ponderations.moyen x ponderations.titre
+#   - un mot-clé "fort" dans le RÉSUMÉ     vaut ponderations.fort x ponderations.resume
+#   - un mot-clé "moyen" dans le RÉSUMÉ    vaut ponderations.moyen x ponderations.resume
+# Un item est rattaché à un domaine si son score local >= seuils.attribution.
+# La correspondance est insensible à la casse et aux accents ; les mots-clés
+# peuvent être en français OU en anglais (les avis des bailleurs sont bilingues).
+# ============================================================================
+
+domaines:
+  evaluation_projet:
+    libelle: "Évaluation de projets et programmes"
+    mots_cles:
+      fort:
+        - "évaluation finale"
+        - "évaluation à mi-parcours"
+        - "évaluation de mi-parcours"
+        - "évaluation d'impact"
+        - "évaluation indépendante"
+        - "évaluation externe"
+        - "final evaluation"
+        - "mid-term evaluation"
+        - "midterm evaluation"
+        - "impact evaluation"
+        - "independent evaluation"
+        - "external evaluation"
+        - "endline"
+        - "midline"
+        - "baseline study"
+        - "étude de base"
+        - "évaluateur"
+        - "evaluator"
+        - "revue à mi-parcours"
+      moyen:
+        - "évaluation"
+        - "evaluation"
+        - "évaluer"
+        - "evaluative"
+        - "termes de référence"
+        - "terms of reference"
+        - "revue finale"
+        - "appraisal"
+        - "leçons apprises"
+        - "lessons learned"
+
+  collecte_donnees:
+    libelle: "Collecte de données et enquêtes"
+    mots_cles:
+      fort:
+        - "collecte de données"
+        - "collecte des données"
+        - "collecte de donnees"
+        - "data collection"
+        - "enquête auprès des ménages"
+        - "enquête auprès des menages"
+        - "household survey"
+        - "cabinet d'enquête"
+        - "cabinet d'enquete"
+        - "société d'enquête"
+        - "survey firm"
+        - "collecte sur tablette"
+        - "enquête par téléphone"
+        - "phone survey"
+      moyen:
+        - "enquête"
+        - "enquete"
+        - "survey"
+        - "enquêteur"
+        - "enqueteur"
+        - "enumerator"
+        - "recensement"
+        - "census"
+        - "sondage"
+        - "échantillonnage"
+        - "echantillonnage"
+        - "sampling"
+        - "kobo"
+        - "odk"
+        - "capi"
+        - "gestion des données"
+        - "data management"
+        - "qualité des données"
+        - "data quality"
+
+  etudes_recherches:
+    libelle: "Études et recherches"
+    mots_cles:
+      fort:
+        - "étude de faisabilité"
+        - "etude de faisabilite"
+        - "feasibility study"
+        - "étude sectorielle"
+        - "etude sectorielle"
+        - "étude de marché"
+        - "etude de marche"
+        - "market study"
+        - "étude thématique"
+        - "recherche opérationnelle"
+        - "operational research"
+        - "étude prospective"
+        - "étude de cas"
+        - "research study"
+        - "étude comparative"
+      moyen:
+        - "étude"
+        - "etude"
+        - "study"
+        - "recherche"
+        - "research"
+        - "diagnostic"
+        - "cartographie"
+        - "mapping"
+        - "analyse sectorielle"
+        - "sector analysis"
+        - "publication"
+        - "working paper"
+        - "rapport d'étude"
+
+  veille_economique:
+    libelle: "Veille économique et conjoncturelle"
+    mots_cles:
+      fort:
+        - "croissance du pib"
+        - "pib réel"
+        - "gdp growth"
+        - "inflation"
+        - "taux directeur"
+        - "politique monétaire"
+        - "politique monetaire"
+        - "loi de finances"
+        - "loi de finance"
+        - "conjoncture économique"
+        - "conjoncture economique"
+        - "economic update"
+        - "economic outlook"
+        - "perspectives économiques"
+        - "enquête périodique auprès des ménages"
+        - "epm madagascar"
+        - "envm"
+      moyen:
+        - "pib"
+        - "gdp"
+        - "macroéconomique"
+        - "macroeconomique"
+        - "macroeconomic"
+        - "indicateur"
+        - "indicator"
+        - "budget"
+        - "fiscal"
+        - "monétaire"
+        - "monetaire"
+        - "monetary"
+        - "commerce extérieur"
+        - "commerce exterieur"
+        - "dette publique"
+        - "pauvreté"
+        - "pauvrete"
+        - "poverty"
+        - "croissance économique"
+        - "prix à la consommation"
+        - "balance des paiements"
+
+  promotion_investissements:
+    libelle: "Promotion des investissements et climat des affaires"
+    mots_cles:
+      fort:
+        - "climat des affaires"
+        - "business climate"
+        - "guichet unique"
+        - "edbm"
+        - "zone franche"
+        - "free zone"
+        - "partenariat public-privé"
+        - "partenariat public-prive"
+        - "public-private partnership"
+        - "investissement privé"
+        - "private investment"
+        - "attraction des investissements"
+        - "investment promotion"
+        - "réforme de l'environnement des affaires"
+      moyen:
+        - "investissement"
+        - "investment"
+        - "investisseur"
+        - "investor"
+        - "création d'entreprise"
+        - "creation d'entreprise"
+        - "entreprise"
+        - "secteur privé"
+        - "secteur prive"
+        - "private sector"
+        - "industrie"
+        - "industrialisation"
+        - "tourisme"
+        - "mines"
+        - "licence d'exploitation"
+        - "business environment"
+
+seuils:
+  attribution: 3          # score local minimum pour rattacher l'item au domaine
+  score_max: 100
+
+ponderations:
+  fort: 3
+  moyen: 1
+  titre: 3
+  resume: 1
+  bonus_source: 2         # + priorité source (1-5) x 2
+  bonus_recence: 8        # + 8 si publié il y a moins de 7 jours

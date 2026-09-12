@@ -1,0 +1,34 @@
+# ============================================================================
+# PARAMÈTRES GÉNÉRAUX DU SYSTÈME DE VEILLE
+# ============================================================================
+
+chemins:
+  base_donnees: data/veille.db
+  rapports: data/rapports
+  exports: data/exports
+  dashboard: data/dashboard/index.html
+  fixtures: demo/fixtures        # jeu d'échantillons pour le mode hors-ligne
+
+collecte:
+  timeout: 20                          # secondes par requête HTTP
+  limite_par_source: 40                # nombre max d'items conservés par source et par cycle
+  jours_arriere: 90                    # fenêtre de collecte pour les APIs
+  user_agent: "Veille-Consultance-Madagascar/1.0 (veille institutionnelle; contact a configurer)"
+
+rapport:
+  jours_couverture: 7                  # fenêtre du digest hebdomadaire
+  max_par_domaine: 15                  # items affichés par domaine dans le digest
+
+dashboard:
+  items_affiches: 300                  # taille de l'échantillon embarqué dans le tableau de bord
+
+retention:
+  jours_purge: 548                     # purge des items de plus de ~18 mois
+
+notification:
+  actif: false                         # passer a true apres configuration des variables SMTP
+  objet_prefixe: "[Veille Madagascar]"
+
+# Variables d'environnement attendues pour la notification e-mail :
+#   VEILLE_SMTP_HOTE, VEILLE_SMTP_PORT, VEILLE_SMTP_UTILISATEUR,
+#   VEILLE_SMTP_MOTDEPASSE, VEILLE_EMAIL_DESTINATAIRES (séparées par des virgules)

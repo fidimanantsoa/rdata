@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veille — Consultances Madagascar</title>
+<style>
+:root {
+  --fond: #f6f7f9; --carte: #ffffff; --encre: #1f2937; --gris: #6b7280;
+  --accent: #0e7490; --bordure: #e5e7eb;
+  --evaluation_projet: #7c3aed; --collecte_donnees: #0891b2;
+  --etudes_recherches: #4f46e5; --veille_economique: #16a34a;
+  --promotion_investissements: #ea580c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+       background: var(--fond); color: var(--encre); }
+header { background: linear-gradient(135deg, #0c4a6e, #0e7490); color: #fff;
+         padding: 24px 32px; }
+header h1 { margin: 0; font-size: 1.45rem; }
+header p { margin: 6px 0 0; opacity: .85; font-size: .9rem; }
+.barre { display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+         padding: 14px 32px; background: var(--carte);
+         border-bottom: 1px solid var(--bordure); position: sticky; top: 0; z-index: 5; }
+.barre input, .barre select { padding: 8px 10px; border: 1px solid var(--bordure);
+         border-radius: 8px; font-size: .9rem; background: #fff; }
+.barre input[type=search] { flex: 1; min-width: 200px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px; padding: 20px 32px; }
+.kpi { background: var(--carte); border: 1px solid var(--bordure);
+       border-radius: 12px; padding: 14px 16px; }
+.kpi b { display: block; font-size: 1.5rem; }
+.kpi span { color: var(--gris); font-size: .78rem; text-transform: uppercase;
+       letter-spacing: .04em; }
+main { padding: 0 32px 48px; }
+.item { background: var(--carte); border: 1px solid var(--bordure);
+        border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
+        display: flex; gap: 14px; align-items: flex-start; }
+.item:hover { border-color: var(--accent); }
+.score { min-width: 52px; text-align: center; border-radius: 10px;
+         background: #ecfeff; color: var(--accent); font-weight: 700;
+         padding: 8px 6px; font-size: 1.05rem; }
+.corps { flex: 1; }
+.titre a { color: var(--encre); text-decoration: none; font-weight: 600; }
+.titre a:hover { color: var(--accent); text-decoration: underline; }
+.meta { color: var(--gris); font-size: .8rem; margin-top: 4px;
+        display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.badge { font-size: .7rem; font-weight: 600; color: #fff; border-radius: 999px;
+         padding: 2px 9px; background: var(--gris); }
+.badge.evaluation_projet { background: var(--evaluation_projet); }
+.badge.collecte_donnees { background: var(--collecte_donnees); }
+.badge.etudes_recherches { background: var(--etudes_recherches); }
+.badge.veille_economique { background: var(--veille_economique); }
+.badge.promotion_investissements { background: var(--promotion_investissements); }
+.alerte { color: #b91c1c; font-weight: 700; }
+.statut { font-size: .72rem; border: 1px solid var(--bordure); border-radius: 6px;
+          padding: 1px 7px; color: var(--gris); }
+.statut.go { background: #dcfce7; color: #166534; border-color: #86efac; }
+.statut.a_suivre { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+.statut.no_go { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+.vide { text-align: center; color: var(--gris); padding: 60px 0; }
+footer { text-align: center; color: var(--gris); font-size: .78rem; padding: 18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🔍 Veille — Activités de consultance à Madagascar</h1>
+  <p>Évaluations · Collecte de données · Études &amp; recherches · Veille économique · Promotion des investissements</p>
+</header>
+
+<div class="barre">
+  <input type="search" id="q" placeholder="Rechercher un titre, un bailleur, un mot-clé…">
+  <select id="f_domaine">
+    <option value="">Tous les domaines</option>
+    <option value="evaluation_projet">Évaluation de projets</option>
+    <option value="collecte_donnees">Collecte de données</option>
+    <option value="etudes_recherches">Études &amp; recherches</option>
+    <option value="veille_economique">Veille économique</option>
+    <option value="promotion_investissements">Investissements</option>
+  </select>
+  <select id="f_statut">
+    <option value="">Tous les statuts</option>
+    <option value="nouveau">Nouveaux</option>
+    <option value="a_suivre">À suivre</option>
+    <option value="go">Go</option>
+    <option value="no_go">No-go</option>
+    <option value="lu">Lu</option>
+  </select>
+  <select id="f_source"><option value="">Toutes les sources</option></select>
+</div>
+
+<div class="kpis" id="kpis"></div>
+<main><div id="liste"></div></main>
+<footer>Données collectées automatiquement — voir <b>digest Markdown</b> pour la synthèse éditoriale · Généré le 2026-09-12 18:44 UTC</footer>
+
+<script>
+const ITEMS = [{"id": 5, "source_nom": "ReliefWeb – Emplois & consultances humanitaires (Madagascar)", "titre": "Recrutement d'une société d'enquête pour la collecte de données de l'enquête auprès des ménages – district de Betioky", "url": "https://reliefweb.int/jobs/4012305", "resume": "[UNICEF] <p>UNICEF Madagascar invite les sociétés d'enquête qualifiées à soumissionner pour la collecte de données d'une enquête auprès des ménages (1 800 ménages, CAPI sur tablette). Deadline : 05/10/2026.</p>", "date_publication": "2026-09-09T14:00:00+00:00", "date_limite": "2026-10-05", "domaines": ["collecte_donnees", "etudes_recherches"], "score": 51, "statut": "nouveau", "jours_restants": 23}, {"id": 33, "source_nom": "EDBM – Economic Development Board of Madagascar", "titre": "Baromètre EDBM 2025 : création d'entreprise en 72 heures dans le guichet unique", "url": "https://www.edbm.mg/actualites/barometre-edbm-2025-creation-entreprise-72-heures/", "resume": "Baromètre EDBM 2025 : création d'entreprise en 72 heures dans le guichet unique", "date_publication": null, "date_limite": null, "domaines": ["promotion_investissements"], "score": 38, "statut": "nouveau", "jours_restants": null}, {"id": 1, "source_nom": "UNDP – Procurement Notices (flux mondial, filtre Madagascar)", "titre": "UNDP-MDG-00142: Individual Consultant – Évaluation à mi-parcours du projet d'appui à la décentralisation", "url": "https://procurement-notices.undp.org/view_notice.cfm?notice_id=105432", "resume": "IC - Individual contractor. Country: MADAGASCAR. Application Deadline: 03 October 2026. Le PNUD Madagascar recherche un consultant pour conduire l'évaluation à mi-parcours du projet, incluant la revue des dispositifs de suivi et une mission terrain dans trois régions.", "date_publication": "2026-09-08T09:00:00+00:00", "date_limite": "2026-10-03", "domaines": ["evaluation_projet"], "score": 30, "statut": "nouveau", "jours_restants": 21}, {"id": 2, "source_nom": "UNDP – Procurement Notices (flux mondial, filtre Madagascar)", "titre": "UNDP-MDG-00141: National consultancy firm – Étude de faisabilité des énergies renouvelables en milieu rural", "url": "https://procurement-notices.undp.org/view_notice.cfm?notice_id=105421", "resume": "RFP - Request for proposal. Country: MADAGASCAR. Application Deadline: 28-Sep-26. Realisation d'une étude de faisabilité et d'un avant-projet pour mini-réseaux solaires, avec collecte de données de terrain dans 15 communes.", "date_publication": "2026-09-05T14:30:00+00:00", "date_limite": "2026-09-28", "domaines": ["collecte_donnees", "etudes_recherches"], "score": 30, "statut": "nouveau", "jours_restants": 16}, {"id": 4, "source_nom": "ReliefWeb – Emplois & consultances humanitaires (Madagascar)", "titre": "Consultant national – Évaluation à mi-parcours du projet de résilience alimentaire dans le Grand Sud", "url": "https://reliefweb.int/jobs/4012341", "resume": "[PAM] <p>Le PAM recherche un consultant national pour conduire l'évaluation à mi-parcours du projet. Date limite de candidature : 02 octobre 2026. Expérience requise en évaluation de projets de sécurité alimentaire.</p>", "date_publication": "2026-09-10T08:30:00+00:00", "date_limite": "2026-10-02", "domaines": ["evaluation_projet"], "score": 29, "statut": "nouveau", "jours_restants": 20}, {"id": 10, "source_nom": "Banque Africaine de Développement – Consultants (flux RSS)", "titre": "Madagascar – Expression of interest : cabinet chargé de l'évaluation finale du programme d'appui au secteur agricole (PASA)", "url": "https://www.afdb.org/en/projects-and-operations/consultancy-notice/madagascar-evaluation-finale-pasa-7891", "resume": "Request for expressions of interest. Les soumissionnaires intéressés doivent démontrer une expérience en évaluation finale de programmes financés par les bailleurs multilatéraux. Date limite de soumission : 15 Octobre 2026.", "date_publication": "2026-09-09T12:00:00+00:00", "date_limite": "2026-10-15", "domaines": ["etudes_recherches", "evaluation_projet"], "score": 28, "statut": "nouveau", "jours_restants": 33}, {"id": 11, "source_nom": "Banque Africaine de Développement – Consultants (flux RSS)", "titre": "Madagascar – Recrutement de consultants individuels : statistiques et collecte de données agricoles", "url": "https://www.afdb.org/en/projects-and-operations/consultancy-notice/madagascar-statistiques-agricoles-7890", "resume": "Individual consultant notice. Missions d'appui à la Direction des statistiques agricoles : conception d'enquêtes, échantillonnage, contrôle qualité des données. Deadline : 05/10/2026.", "date_publication": "2026-09-07T09:00:00+00:00", "date_limite": "2026-10-05", "domaines": ["collecte_donnees", "etudes_recherches"], "score": 28, "statut": "nouveau", "jours_restants": 23}, {"id": 34, "source_nom": "EDBM – Economic Development Board of Madagascar", "titre": "Secteur textile et zone franche : 300 millions USD d'investissements privés annoncés en 2026", "url": "https://www.edbm.mg/actualites/zone-franche-textile-nouveaux-investissements-2026/", "resume": "Secteur textile et zone franche : 300 millions USD d'investissements privés annoncés en 2026", "date_publication": null, "date_limite": null, "domaines": ["promotion_investissements"], "score": 26, "statut": "nouveau", "jours_restants": null}, {"id": 6, "source_nom": "ReliefWeb – Emplois & consultances humanitaires (Madagascar)", "titre": "Individual Consultant – Baseline study for climate adaptation programme, Madagascar", "url": "https://reliefweb.int/jobs/4012288", "resume": "[FAO]", "date_publication": "2026-09-07T09:15:00+00:00", "date_limite": null, "domaines": ["etudes_recherches", "evaluation_projet"], "score": 25, "statut": "nouveau", "jours_restants": null}, {"id": 31, "source_nom": "INSTAT – publications & enquêtes", "titre": "Indice des prix à la consommation – août 2026", "url": "https://www.instat.mg/publication/indice-des-prix-a-la-consommation-aout-2026/", "resume": "Indice des prix à la consommation – août 2026 Publié le 05 septembre 2026 L'inflation en glissement annuel s'établit à 5,8 % en août 2026.", "date_publication": "2026-09-05T00:00:00Z", "date_limite": "2026-09-05", "domaines": ["collecte_donnees", "veille_economique"], "score": 25, "statut": "nouveau", "jours_restants": -7}, {"id": 21, "source_nom": "ReliefWeb – Rapports & évaluations (Madagascar)", "titre": "Évaluation finale du projet d'appui à la résilience des ménages ruraux – rapport", "url": "https://reliefweb.int/report/8900121", "resume": "[FIDA]", "date_publication": "2026-09-08T10:00:00+00:00", "date_limite": null, "domaines": ["etudes_recherches", "evaluation_projet"], "score": 23, "statut": "nouveau", "jours_restants": null}, {"id": 22, "source_nom": "ReliefWeb – Rapports & évaluations (Madagascar)", "titre": "Madagascar : note de conjoncture économique et perspectives 2026", "url": "https://reliefweb.int/report/8900098", "resume": "[Banque mondiale]", "date_publication": "2026-09-06T09:30:00+00:00", "date_limite": null, "domaines": ["etudes_recherches", "evaluation_projet", "veille_economique"], "score": 23, "statut": "nouveau", "jours_restants": null}, {"id": 13, "source_nom": "FID Madagascar – Appels d'offres", "titre": "Consultant chargé de l'évaluation à mi-parcours du projet Filets de Sécurité et de Résilience (PFSR) | N°08/2026-FID/DG/26 — 29/09/2026", "url": "https://www.fid.mg/consultant-charge-de-levaluation-a-mi-parcours-du-projet-pfsr-n-08-2026/", "resume": "Consultant chargé de l'évaluation à mi-parcours du projet Filets de Sécurité et de Résilience (PFSR) | N°08/2026-FID/DG/26 — 29/09/2026", "date_publication": "2026-09-29T00:00:00Z", "date_limite": "2026-09-29", "domaines": ["collecte_donnees", "evaluation_projet"], "score": 22, "statut": "nouveau", "jours_restants": 17}, {"id": 14, "source_nom": "FID Madagascar – Appels d'offres", "titre": "Recrutement du prestataire chargé de la collecte de données et du suivi des bénéficiaires du projet EAGER | N°62-2026-FID/DIRGEN — 04/10/2026", "url": "https://www.fid.mg/recrutement-du-prestataire-charge-de-la-collecte-de-donnees-eager-n-62-2026/", "resume": "Recrutement du prestataire chargé de la collecte de données et du suivi des bénéficiaires du projet EAGER | N°62-2026-FID/DIRGEN — 04/10/2026", "date_publication": "2026-10-04T00:00:00Z", "date_limite": "2026-10-04", "domaines": ["collecte_donnees", "evaluation_projet"], "score": 22, "statut": "nouveau", "jours_restants": 22}, {"id": 16, "source_nom": "FID Madagascar – Appels d'offres", "titre": "Étude de faisabilité pour l'extension des filets de sécurité sensibles au climat | N°09/2026-FID/DG/26 — 10/10/2026", "url": "https://www.fid.mg/etude-de-faisabilie-projets-filets-securite-climatique-n-09-2026/", "resume": "Étude de faisabilité pour l'extension des filets de sécurité sensibles au climat | N°09/2026-FID/DG/26 — 10/10/2026", "date_publication": "2026-10-10T00:00:00Z", "date_limite": "2026-10-10", "domaines": ["collecte_donnees", "etudes_recherches", "evaluation_projet"], "score": 22, "statut": "nouveau", "jours_restants": 28}, {"id": 19, "source_nom": "ARMP Madagascar – Avis de marchés publics (toutes régions)", "titre": "Avis de consultation ouverte — recrutement d'un opérateur de collecte de données pour l'enquête nationale sur l'emploi", "url": "http://www.armp.mg/marches_publics/avis.php?id=261035", "resume": "Avis de consultation ouverte — recrutement d'un opérateur de collecte de données pour l'enquête nationale sur l'emploi", "date_publication": null, "date_limite": null, "domaines": ["collecte_donnees", "etudes_recherches"], "score": 22, "statut": "nouveau", "jours_restants": null}, {"id": 30, "source_nom": "INSTAT – publications & enquêtes", "titre": "Enquête Périodique auprès des Ménages (EPM) 2025 – Rapport principal", "url": "https://www.instat.mg/publication/enquete-periodique-aupres-des-menages-2025-rapport-principal/", "resume": "Enquête Périodique auprès des Ménages (EPM) 2025 – Rapport principal", "date_publication": null, "date_limite": null, "domaines": ["collecte_donnees", "veille_economique"], "score": 22, "statut": "nouveau", "jours_restants": null}, {"id": 26, "source_nom": "Banque mondiale – Indicateurs macroéconomiques Madagascar (API)", "titre": "Inflation, prix à la consommation (%) — 5,9 (2025)", "url": "https://data.worldbank.org/indicator/FP.CPI.TOTL.ZG?locations=MG", "resume": "Dernière valeur disponible de l'indicateur Banque mondiale FP.CPI.TOTL.ZG pour Madagascar : 5.9 (2025).", "date_publication": "2025-12-31T00:00:00Z", "date_limite": null, "domaines": ["veille_economique"], "score": 21, "statut": "nouveau", "jours_restants": null}, {"id": 7, "source_nom": "ReliefWeb – Emplois & consultances humanitaires (Madagascar)", "titre": "Consultant en suivi-évaluation et data management – projet santé communautaire", "url": "https://reliefweb.int/jobs/4012240", "resume": "[OMS]", "date_publication": "2026-09-05T11:20:00+00:00", "date_limite": null, "domaines": ["collecte_donnees", "etudes_recherches", "evaluation_projet"], "score": 19, "statut": "nouveau", "jours_restants": null}, {"id": 25, "source_nom": "Banque mondiale – Indicateurs macroéconomiques Madagascar (API)", "titre": "Croissance du PIB (%) — 4,1 (2025)", "url": "https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG?locations=MG", "resume": "Dernière valeur disponible de l'indicateur Banque mondiale NY.GDP.MKTP.KD.ZG pour Madagascar : 4.1 (2025).", "date_publication": "2025-12-31T00:00:00Z", "date_limite": null, "domaines": ["veille_economique"], "score": 19, "statut": "nouveau", "jours_restants": null}, {"id": 20, "source_nom": "ARMP Madagascar – Avis de marchés publics (toutes régions)", "titre": "Réalisation d'une étude thématique sur l'emploi des jeunes dans le secteur de la pêche artisanale", "url": "http://www.armp.mg/marches_publics/avis.php?id=261029", "resume": "Réalisation d'une étude thématique sur l'emploi des jeunes dans le secteur de la pêche artisanale", "date_publication": null, "date_limite": null, "domaines": ["etudes_recherches"], "score": 18, "statut": "nouveau", "jours_restants": null}, {"id": 24, "source_nom": "ReliefWeb – Rapports & évaluations (Madagascar)", "titre": "Enquête sur la sécurité alimentaire – résultats de la collecte de données round 5", "url": "https://reliefweb.int/report/8900054", "resume": "[FEWS NET]", "date_publication": "2026-09-02T15:00:00+00:00", "date_limite": null, "domaines": ["collecte_donnees", "etudes_recherches", "evaluation_projet"], "score": 18, "statut": "nouveau", "jours_restants": null}, {"id": 32, "source_nom": "INSTAT – publications & enquêtes", "titre": "Compte de la nation 2025 – premier résultats du PIB", "url": "https://www.instat.mg/publication/compte-de-la-nation-2025/", "resume": "Compte de la nation 2025 – premier résultats du PIB Publié le 28 août 2026 Le PIB réel a progressé de 4,1 % en 2025, porté par les services et l'agriculture.", "date_publication": "2026-08-28T00:00:00Z", "date_limite": "2026-08-28", "domaines": ["collecte_donnees", "veille_economique"], "score": 17, "statut": "nouveau", "jours_restants": -15}, {"id": 9, "source_nom": "ReliefWeb – Emplois & consultances humanitaires (Madagascar)", "titre": "Consultant national – étude de marché et faisabilité pour l'accès aux services financiers ruraux", "url": "https://reliefweb.int/jobs/4012150", "resume": "[PNUD]", "date_publication": "2026-09-01T07:00:00+00:00", "date_limite": null, "domaines": ["etudes_recherches"], "score": 17, "statut": "nouveau", "jours_restants": null}, {"id": 3, "source_nom": "UNDP – Procurement Notices (flux mondial, filtre Madagascar)", "titre": "UNDP-MDG-00139: Consultant national – appui à la préparation de l'enquête périodique sur les conditions de vie des ménages", "url": "https://procurement-notices.undp.org/view_notice.cfm?notice_id=105390", "resume": "IC - Individual contractor. Country: MADAGASCAR. Application Deadline: 26-Sep-26. Appui méthodologique à l'INSTAT pour l'échantillonnage et la gestion des données de l'enquête.", "date_publication": "2026-09-03T08:15:00+00:00", "date_limite": "2026-09-26", "domaines": ["collecte_donnees", "etudes_recherches"], "score": 16, "statut": "nouveau", "jours_restants": 14}, {"id": 23, "source_nom": "ReliefWeb – Rapports & évaluations (Madagascar)", "titre": "Impact evaluation brief – cash transfer programme in the Grand Sud East", "url": "https://reliefweb.int/report/8900076", "resume": "[UNICEF Office of Research]", "date_publication": "2026-09-04T13:00:00+00:00", "date_limite": null, "domaines": ["evaluation_projet"], "score": 15, "statut": "nouveau", "jours_restants": null}, {"id": 35, "source_nom": "EDBM – Economic Development Board of Madagascar", "titre": "Forum des investisseurs – Madagascar Business Forum, 21-22 octobre 2026", "url": "https://www.edbm.mg/actualites/edbm-forum-investisseurs-madagascar-octobre-2026/", "resume": "Forum des investisseurs – Madagascar Business Forum, 21-22 octobre 2026", "date_publication": "2026-10-22T00:00:00Z", "date_limite": "2026-10-22", "domaines": ["promotion_investissements"], "score": 14, "statut": "nouveau", "jours_restants": 40}, {"id": 8, "source_nom": "ReliefWeb – Emplois & consultances humanitaires (Madagascar)", "titre": "Chargé d'étude – analyse sectorielle de la filière vanille région SAVA", "url": "https://reliefweb.int/jobs/4012199", "resume": "[Gret]", "date_publication": "2026-09-03T16:45:00+00:00", "date_limite": null, "domaines": ["etudes_recherches"], "score": 14, "statut": "nouveau", "jours_restants": null}, {"id": 15, "source_nom": "FID Madagascar – Appels d'offres", "titre": "Acquisition de matériel informatique pour la Direction interrégionale du FID Majunga | N°04/2026 — 21/09/2026", "url": "https://www.fid.mg/acquisition-de-materiel-informatique-direction-interregionale-majunga-n-04-2026/", "resume": "Acquisition de matériel informatique pour la Direction interrégionale du FID Majunga | N°04/2026 — 21/09/2026", "date_publication": "2026-09-21T00:00:00Z", "date_limite": "2026-09-21", "domaines": ["collecte_donnees", "evaluation_projet"], "score": 13, "statut": "nouveau", "jours_restants": 9}, {"id": 27, "source_nom": "Banque mondiale – Indicateurs macroéconomiques Madagascar (API)", "titre": "Exportations de biens et services (% du PIB) — 21,4 (2024)", "url": "https://data.worldbank.org/indicator/NE.EXP.GNFS.ZS?locations=MG", "resume": "Dernière valeur disponible de l'indicateur Banque mondiale NE.EXP.GNFS.ZS pour Madagascar : 21.4 (2024).", "date_publication": "2024-12-31T00:00:00Z", "date_limite": null, "domaines": ["veille_economique"], "score": 12, "statut": "nouveau", "jours_restants": null}, {"id": 12, "source_nom": "Banque Africaine de Développement – Consultants (flux RSS)", "titre": "Regional – Expression of interest : étude régionale sur les chaînes de valeur agricoles (Afrique de l'Est et Australe)", "url": "https://www.afdb.org/en/projects-and-operations/consultancy-notice/regional-chaines-de-valeur-7888", "resume": "Request for expressions of interest, regional coverage including Madagascar. Deadline : 30 Sep 2026.", "date_publication": "2026-09-04T15:00:00+00:00", "date_limite": "2026-09-30", "domaines": ["etudes_recherches"], "score": 11, "statut": "nouveau", "jours_restants": 18}, {"id": 17, "source_nom": "ARMP Madagascar – Avis de marchés publics (toutes régions)", "titre": "Avis d'appel à manifestation d'intérêt n°003-26/MEF/SG/DRHF — sélection d'un cabinet d'études pour l'évaluation des politiques budgétaires", "url": "http://www.armp.mg/marches_publics/avis.php?id=261041", "resume": "Avis d'appel à manifestation d'intérêt n°003-26/MEF/SG/DRHF — sélection d'un cabinet d'études pour l'évaluation des politiques budgétaires", "date_publication": null, "date_limite": null, "domaines": ["etudes_recherches", "evaluation_projet", "veille_economique"], "score": 10, "statut": "nouveau", "jours_restants": null}, {"id": 18, "source_nom": "ARMP Madagascar – Avis de marchés publics (toutes régions)", "titre": "Fournitures de matériaux de construction pour l'entretien des voiries : ciment, fer, tôles", "url": "http://www.armp.mg/marches_publics/avis.php?id=261038", "resume": "Fournitures de matériaux de construction pour l'entretien des voiries : ciment, fer, tôles", "date_publication": null, "date_limite": null, "domaines": ["etudes_recherches"], "score": 9, "statut": "nouveau", "jours_restants": null}, {"id": 28, "source_nom": "Banque mondiale – Indicateurs macroéconomiques Madagascar (API)", "titre": "Indice de Gini — 42,6 (2024)", "url": "https://data.worldbank.org/indicator/SI.POV.GINI?locations=MG", "resume": "Dernière valeur disponible de l'indicateur Banque mondiale SI.POV.GINI pour Madagascar : 42.6 (2024).", "date_publication": "2024-12-31T00:00:00Z", "date_limite": null, "domaines": [], "score": 9, "statut": "nouveau", "jours_restants": null}, {"id": 29, "source_nom": "Banque mondiale – Indicateurs macroéconomiques Madagascar (API)", "titre": "RNB par habitant (US$) — 530 (2025)", "url": "https://data.worldbank.org/indicator/NY.GNP.PCAP.CD?locations=MG", "resume": "Dernière valeur disponible de l'indicateur Banque mondiale NY.GNP.PCAP.CD pour Madagascar : 530 (2025).", "date_publication": "2025-12-31T00:00:00Z", "date_limite": null, "domaines": [], "score": 9, "statut": "nouveau", "jours_restants": null}];
+const LIBELLES = {"evaluation_projet": "Évaluation de projets et programmes", "collecte_donnees": "Collecte de données et enquêtes", "etudes_recherches": "Études et recherches", "veille_economique": "Veille économique et conjoncturelle", "promotion_investissements": "Promotion des investissements et climat des affaires"};
+const DOMAINE_ORDRE = ["evaluation_projet","collecte_donnees","etudes_recherches",
+                       "veille_economique","promotion_investissements"];
+
+function badge(code){ return '<span class="badge '+code+'">'+(LIBELLES[code]||code)+'</span>'; }
+
+function compteurs(liste){
+  const par_domaine = {};
+  DOMAINE_ORDRE.forEach(d => par_domaine[d] = 0);
+  let go = 0, bientot = 0;
+  liste.forEach(it => {
+    (it.domaines||[]).forEach(d => { if(d in par_domaine) par_domaine[d]++; });
+    if (it.statut === 'go') go++;
+    if (it.jours_restants !== null && it.jours_restants >= 0 && it.jours_restants <= 10) bientot++;
+  });
+  let html = '<div class="kpi"><b>'+liste.length+'</b><span>items au total</span></div>';
+  DOMAINE_ORDRE.forEach(d => {
+    html += '<div class="kpi"><b>'+par_domaine[d]+'</b><span>'+LIBELLES[d]+'</span></div>';
+  });
+  html += '<div class="kpi"><b>'+go+'</b><span>statut go</span></div>'
+       +  '<div class="kpi"><b>'+bientot+'</b><span>éch. &lt; 10 j</span></div>';
+  document.getElementById('kpis').innerHTML = html;
+}
+
+function rendu(){
+  const q = document.getElementById('q').value.toLowerCase();
+  const d = document.getElementById('f_domaine').value;
+  const s = document.getElementById('f_statut').value;
+  const src = document.getElementById('f_source').value;
+  const liste = ITEMS.filter(it =>
+    (!d || (it.domaines||[]).includes(d)) &&
+    (!s || it.statut === s) &&
+    (!src || it.source_nom === src) &&
+    (!q || (it.titre+' '+it.resume+' '+it.source_nom).toLowerCase().includes(q))
+  );
+  compteurs(liste);
+  if (!liste.length){
+    document.getElementById('liste').innerHTML = '<div class="vide">Aucun item ne correspond aux filtres.</div>';
+    return;
+  }
+  document.getElementById('liste').innerHTML = liste.map(it => {
+    const domaines = (it.domaines||[]).sort((a,b)=>DOMAINE_ORDRE.indexOf(a)-DOMAINE_ORDRE.indexOf(b)).map(badge).join(' ');
+    const dl = it.date_limite
+      ? '<span class="'+(it.jours_restants!==null && it.jours_restants<=10 ? 'alerte' : '')+'">⏰ '+it.date_limite
+        +(it.jours_restants===null?'':' ('+(it.jours_restants<0?'clôturé':'J-'+it.jours_restants)+')')+'</span>'
+      : '';
+    return '<div class="item"><div class="score" title="score de pertinence">'+it.score+'</div>'
+      + '<div class="corps"><div class="titre"><a href="'+it.url+'" target="_blank" rel="noopener">'+it.titre+'</a></div>'
+      + '<div class="meta"><span>'+it.source_nom+'</span><span>'+ (it.date_publication||'').slice(0,10) +'</span>'
+      + dl + '<span class="statut '+it.statut+'">'+it.statut+'</span></div>'
+      + '<div class="meta">'+domaines+'</div></div></div>';
+  }).join('');
+}
+
+// peuplement des sources
+const sources = [...new Set(ITEMS.map(i => i.source_nom))].sort();
+document.getElementById('f_source').innerHTML =
+  '<option value="">Toutes les sources</option>'
+  + sources.map(s => '<option>'+s+'</option>').join('');
+['q','f_domaine','f_statut','f_source'].forEach(id =>
+  document.getElementById(id).addEventListener('input', rendu));
+rendu();
+</script>
+</body>
+</html>

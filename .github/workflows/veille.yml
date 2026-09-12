@@ -1,0 +1,52 @@
+# Automatisation du système de veille — consultances Madagascar
+# Cycle : mardi et vendredi, 06:00 UTC. Manuel : onglet Actions → Run workflow.
+name: Veille Madagascar
+
+on:
+  schedule:
+    - cron: "0 6 * * 2,5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: veille-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Cycle de collecte
+        run: |
+          python -m veille collecter
+          python -m veille rapport
+          python -m veille dashboard
+
+      - name: Contrôle de cohérence (tests du moteur)
+        run: python -m pytest tests/ -q
+
+      - name: Archiver les résultats (base, digest, tableau de bord)
+        run: |
+          git config user.name "Robot de veille"
+          git config user.email "actions@github.com"
+          git add data/veille.db data/rapports data/dashboard data/exports docs/registre_sources.md
+          if git diff --cached --quiet; then
+            echo "Aucun nouveau contenu — rien à committer."
+          else
+            git commit -m "veille: cycle automatique $(date -u +%F)"
+            git push
+          fi

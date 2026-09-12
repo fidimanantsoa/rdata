@@ -1,0 +1,447 @@
+# ============================================================================
+# REGISTRE DES SOURCES — Système de veille "Activités de consultance à Madagascar"
+# ============================================================================
+# Chaque source est déclarée avec :
+#   id              : identifiant unique (stable, utilisé en base)
+#   nom             : libellé lisible
+#   categorie       : opportunites | etudes | veille_economique | investissements | presse
+#   type            : rss | api_reliefweb | api_wb_indicateurs | html | manuel
+#   url             : point d'accès (flux, API ou page à surveiller)
+#   filtre_inclut   : (optionnel) sous-chaîne obligatoire dans titre+résumé
+#                     (utile pour les flux mondiaux -> on ne garde que Madagascar)
+#   priorite        : 1 (faible) à 5 (critique) — pondère le score de pertinence
+#   frequence       : recommandation de fréquence de consultation
+#   statut          : operationnel | a_valider | manuel
+#                     - operationnel : connecteur testé, prêt à l'emploi
+#                     - a_valider    : source identifiée, connecteur à calibrer
+#                                      au déploiement (python -m veille verifier)
+#                     - manuel       : pas de connecteur (inscription, alertes
+#                                      e-mail, plateforme payante, réseaux sociaux)
+#   domaines_defaut : domaines rattachés d'office aux items de cette source
+#                     (en plus de la classification automatique par mots-clés)
+#
+# Le statut de chaque source est revu à chaque revue mensuelle du registre.
+# Ajouter une source = ajouter une entrée ici, aucun code à modifier.
+# ============================================================================
+
+sources:
+
+  # ---------------------------------------------------------------------------
+  # A. OPPORTUNITÉS — appels d'offres & recrutements de consultants
+  # ---------------------------------------------------------------------------
+  - id: undp_pn
+    nom: "UNDP – Procurement Notices (flux mondial, filtre Madagascar)"
+    categorie: opportunites
+    type: rss
+    url: "https://procurement-notices.undp.org/rss_feeds/rss.xml"
+    filtre_inclut: "MADAGASCAR"
+    priorite: 5
+    frequence: quotidienne
+    statut: operationnel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Avis de passation du PNUD (IC, RFP, ITB, RFQ). Le flux est mondial :
+      le filtre 'MADAGASCAR' ne conserve que les avis du bureau PNUD Madagascar.
+
+  - id: reliefweb_jobs
+    nom: "ReliefWeb – Emplois & consultances humanitaires (Madagascar)"
+    categorie: opportunites
+    type: api_reliefweb
+    url: "https://api.reliefweb.int/1/jobs"
+    endpoint: jobs
+    priorite: 4
+    frequence: quotidienne
+    statut: operationnel
+    domaines_defaut: [etudes_recherches]
+    parametres:
+      limite: 40
+    commentaire: >
+      API publique ReliefWeb (ONU-OCHA) : consultances et emplois publiés par
+      les agences ONU, ONG et bailleurs actives à Madagascar.
+
+  - id: bad_rss_consultants
+    nom: "Banque Africaine de Développement – Consultants (flux RSS)"
+    categorie: opportunites
+    type: rss
+    url: "https://www.afdb.org/en/rss-feeds"      # page d'index des flux
+    url_flux: "https://www.afdb.org/rss/consultants-vacancies"
+    priorite: 4
+    frequence: hebdomadaire
+    statut: a_valider
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Flux "Consultants Vacancies" de la BAD. Vérifier l'URL exacte du flux
+      (liée depuis afdb.org/en/rss-feeds) puis filtrer sur Madagascar.
+
+  - id: bad_rss_marches
+    nom: "Banque Africaine de Développement – Passation des marchés (flux RSS)"
+    categorie: opportunites
+    type: rss
+    url: "https://www.afdb.org/rss/projects-procurement"
+    priorite: 4
+    frequence: hebdomadaire
+    statut: a_valider
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Avis de passation (GPN/SPN/REOI) des projets financés par la BAD.
+      Filtrer sur Madagascar, ou suivre via le portail projets de la BAD.
+
+  - id: fid_ao
+    nom: "FID Madagascar – Appels d'offres"
+    categorie: opportunites
+    type: html
+    url: "https://www.fid.mg/appels-doffres/"
+    selecteurs:
+      liens: "main a[href*='fid.mg/']"        # à calibrer (voir `veille verifier`)
+      conteneur_date: ""
+    priorite: 5
+    frequence: hebdomadaire
+    statut: a_valider
+    domaines_defaut: [collecte_donnees, evaluation_projet]
+    commentaire: >
+      Le FID (agence d'exécution des filets sociaux, financement Banque
+      mondiale) publie régulièrement des consultations pour la collecte de
+      données, les évaluations et le suivi (ex. projets PFSR, EAGER).
+
+  - id: armp_avis
+    nom: "ARMP Madagascar – Avis de marchés publics (toutes régions)"
+    categorie: opportunites
+    type: html
+    url: "http://www.armp.mg/marches_publics/"
+    selecteurs:
+      liens: "table a, .avis a"               # à calibrer
+    priorite: 3
+    frequence: hebdomadaire
+    statut: a_valider
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Portail officiel des marchés publics malgaches (source : logiciels
+      e-GP et SIGMP). Avis publiés par région. Le contenu utile (études,
+      consultances) est noyé dans les avis travaux/fournitures : la
+      classification par mots-clés fait le tri.
+
+  - id: ungm
+    nom: "UNGM – Portail des marchés des Nations Unies"
+    categorie: opportunites
+    type: manuel
+    url: "https://www.ungm.org/Public/Procurement/Notices"
+    priorite: 4
+    frequence: hebdomadaire
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      S'inscrire et créer une alerte 'Madagascar' + catégories 'Consulting
+      services'. Agrège UNDP, UNICEF, PAM, OIM, etc. (complément du flux UNDP).
+
+  - id: wb_procurement
+    nom: "Banque mondiale – Opportunités de marchés (projets, Madagascar)"
+    categorie: opportunites
+    type: manuel
+    url: "https://www.worldbank.org/en/procurement"
+    priorite: 5
+    frequence: hebdomadaire
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Les avis de consultation des projets WB à Madagascar sont publiés par
+      les agences d'exécution (FID, ministères, ONE…) et agrégés sur le
+      portail passation de la Banque. Vérifier l'existence d'un flux
+      filtrable au déploiement (statut à passer en a_valider puis rss/html).
+
+  - id: ue_funding_tenders
+    nom: "Union européenne – Funding & Tenders + Délégation UE à Madagascar"
+    categorie: opportunites
+    type: manuel
+    url: "https://international-partnerships.ec.europa.eu/funding-tenders-search_en"
+    priorite: 4
+    frequence: hebdomadaire
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Contrats de service UE (actions centralisées) et avis de la Délégation
+      de l'UE à Madagascar. Créer un compte et des alertes par pays/mot-clé.
+
+  - id: afd_marches
+    nom: "AFD – Appels d'offres & consultations"
+    categorie: opportunites
+    type: manuel
+    url: "https://www.afd.fr/fr/appels-offres"
+    priorite: 3
+    frequence: mensuelle
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+
+  - id: giz_jica_cooperation
+    nom: "Coopération bilatérale – GIZ, JICA, DDC, Ambassades"
+    categorie: opportunites
+    type: manuel
+    url: "https://www.giz.de/en/worldwide/"
+    priorite: 3
+    frequence: mensuelle
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Les coopérations recrutent des consultants nationaux via leurs propres
+      portails et réseaux. S'inscrire aux newsletters pays.
+
+  - id: piloconsult
+    nom: "PiloConsult – Agrégateur d'appels d'offres Madagascar"
+    categorie: opportunites
+    type: html
+    url: "https://appel-offre.piloconsult.com/"
+    selecteurs:
+      liens: "a[href*='/offres/']"
+    priorite: 3
+    frequence: hebdomadaire
+    statut: a_valider
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Agrégateur privé spécialisé Madagascar (tampon complémentaire).
+      Vérifier les CGU avant tout scraping automatisé.
+
+  - id: onu_carrieres
+    nom: "Agences ONU à Madagascar – pages carrières (UNICEF, PAM, FAO, OIM…)"
+    categorie: opportunites
+    type: manuel
+    url: "https://www.unicef.org/careers/"
+    priorite: 3
+    frequence: hebdomadaire
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Les postes 'Consultant' des agences passent aussi par ReliefWeb et
+      l'UNGM ; cette entrée sert de rappel de contrôle croisé manuel.
+
+  - id: devex_developmentaid
+    nom: "Devex / DevelopmentAid (agrégateurs internationaux)"
+    categorie: opportunites
+    type: manuel
+    url: "https://www.developmentaid.org"
+    priorite: 3
+    frequence: hebdomadaire
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Plateformes payantes (compte gratuit limité). Créer des alertes
+      'Madagascar' + 'consulting'. Utile pour la couverture résiduelle.
+
+  - id: linkedin_alertes
+    nom: "LinkedIn – alertes emplois/consultances Madagascar"
+    categorie: opportunites
+    type: manuel
+    url: "https://www.linkedin.com/jobs/"
+    priorite: 4
+    frequence: quotidienne
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Créer des alertes : "consultant" + Antananarivo, "évaluation projet"
+      + Madagascar, "collecte de données" + Madagascar. Les résultats sont
+      consignés manuellement via `python -m veille ajouter`.
+
+  - id: reseaux_sociaux
+    nom: "Groupes Facebook/WhatsApp professionnels malgaches"
+    categorie: opportunites
+    type: manuel
+    url: ""
+    priorite: 3
+    frequence: quotidienne
+    statut: manuel
+    domaines_defaut: [etudes_recherches]
+    commentaire: >
+      Canaux informels où circulent les avis de consultation nationaux.
+      Consigner les opportunités manuellement (`python -m veille ajouter`).
+
+  # ---------------------------------------------------------------------------
+  # B. ÉTUDES, RECHERCHES & ÉVALUATIONS (production intellectuelle)
+  # ---------------------------------------------------------------------------
+  - id: reliefweb_reports
+    nom: "ReliefWeb – Rapports & évaluations (Madagascar)"
+    categorie: etudes
+    type: api_reliefweb
+    url: "https://api.reliefweb.int/1/reports"
+    endpoint: reports
+    priorite: 3
+    frequence: hebdomadaire
+    statut: operationnel
+    domaines_defaut: [etudes_recherches, evaluation_projet]
+    parametres:
+      limite: 40
+    commentaire: >
+      Nouveaux rapports, évaluations et études sur Madagascar (agences ONU,
+      ONG, think tanks). Alimente la veille méthodologique et concurrentielle.
+
+  - id: wb_documents
+    nom: "Banque mondiale – Documents & rapports (Madagascar)"
+    categorie: etudes
+    type: manuel
+    url: "https://documents.worldbank.org/en/country/madagascar"
+    priorite: 4
+    frequence: mensuelle
+    statut: manuel
+    domaines_defaut: [etudes_recherches, veille_economique]
+    commentaire: >
+      Projets approuvés, PAD, revues à mi-parcours, clôtures : signal
+      d'anticipation des consultances à venir (évaluation finale, études).
+
+  - id: depot_evaluations
+    nom: "3ie / ALNAP – dépôts d'évaluations"
+    categorie: etudes
+    type: manuel
+    url: "https://www.3ieimpact.org"
+    priorite: 2
+    frequence: mensuelle
+    statut: manuel
+    domaines_defaut: [evaluation_projet]
+    commentaire: >
+      Veille méthodologique : quelles évaluations sont conduites à Madagascar,
+      par quels cabinets (concurrents), avec quels devis.
+
+  # ---------------------------------------------------------------------------
+  # C. VEILLE ÉCONOMIQUE
+  # ---------------------------------------------------------------------------
+  - id: wb_indicateurs
+    nom: "Banque mondiale – Indicateurs macroéconomiques Madagascar (API)"
+    categorie: veille_economique
+    type: api_wb_indicateurs
+    url: "https://api.worldbank.org/v2/country/MGA/indicator/{code}"
+    priorite: 4
+    frequence: hebdomadaire
+    statut: operationnel
+    domaines_defaut: [veille_economique]
+    parametres:
+      indicateurs:
+        - {code: "NY.GDP.MKTP.KD.ZG", libelle: "Croissance du PIB (%)"}
+        - {code: "FP.CPI.TOTL.ZG",    libelle: "Inflation, prix à la consommation (%)"}
+        - {code: "NE.EXP.GNFS.ZS",    libelle: "Exportations de biens et services (% du PIB)"}
+        - {code: "SI.POV.GINI",       libelle: "Indice de Gini"}
+        - {code: "NY.GNP.PCAP.CD",    libelle: "RNB par habitant (US$)"}
+    commentaire: >
+      API publique de la Banque mondiale : dernière valeur disponible pour
+      chaque indicateur. Sert d'étalon quantitatif pour les notes de
+      conjoncture et les propositions (chiffrer le contexte national).
+
+  - id: instat_publications
+    nom: "INSTAT – publications & enquêtes"
+    categorie: veille_economique
+    type: html
+    url: "https://www.instat.mg/publications/"
+    selecteurs:
+      liens: "article a[href*='instat.mg'], .publication a"
+    priorite: 5
+    frequence: hebdomadaire
+    statut: a_valider
+    domaines_defaut: [veille_economique, collecte_donnees]
+    commentaire: >
+      EPM, ENVM, indices des prix, projections démographiques. Double
+      intérêt : (1) données de cadrage, (2) signal d'activité — l'INSTAT
+      recrute des cabinets de collecte pour ses grandes enquêtes.
+
+  - id: bfm_publications
+    nom: "Banky Foiben'i Madagasikara (banque centrale) – publications"
+    categorie: veille_economique
+    type: html
+    url: "https://www.bfm.mg/publications/"
+    selecteurs:
+      liens: "a[href*='publication'], a[href$='.pdf']"
+    priorite: 4
+    frequence: mensuelle
+    statut: a_valider
+    domaines_defaut: [veille_economique]
+    commentaire: >
+      Rapport sur la politique monétaire, statistiques monétaires et
+      financières, conjoncture. Source de référence pour la veille éco.
+
+  - id: mef_documents
+    nom: "Ministère de l'Économie et des Finances – documents budgétaires"
+    categorie: veille_economique
+    type: html
+    url: "https://www.mef.gov.mg/"
+    selecteurs:
+      liens: "a[href*='document'], a[href*='budget'], a[href$='.pdf']"
+    priorite: 3
+    frequence: mensuelle
+    statut: a_valider
+    domaines_defaut: [veille_economique]
+    commentaire: >
+      Lois de finances initiales, DSRP, cadres budgétaires. Le calendrier
+      LFI/DRSP annonce les études et évaluations commandées par l'État.
+
+  - id: wb_mad_update
+    nom: "Banque mondiale – Madagascar Economic Update"
+    categorie: veille_economique
+    type: manuel
+    url: "https://www.worldbank.org/en/country/madagascar"
+    priorite: 4
+    frequence: semestrielle
+    statut: manuel
+    domaines_defaut: [veille_economique]
+    commentaire: >
+      Note semestrielle de conjoncture de la Banque mondiale. À lire
+      systématiquement : c'est le format de référence des notes de veille.
+
+  - id: fmi_madagascar
+    nom: "FMI – consultations Article IV et rapports Madagascar"
+    categorie: veille_economique
+    type: manuel
+    url: "https://www.imf.org/en/Countries/MDA"
+    priorite: 3
+    frequence: semestrielle
+    statut: manuel
+    domaines_defaut: [veille_economique]
+
+  - id: presse_eco_mada
+    nom: "Presse économique malgache (L'Express, Midi, La Gazette…)"
+    categorie: presse
+    type: manuel
+    url: "https://www.lexpressmada.com/"
+    priorite: 3
+    frequence: hebdomadaire
+    statut: manuel
+    domaines_defaut: [veille_economique, promotion_investissements]
+    commentaire: >
+      Rubriques économie & entreprises. Vérifier la présence de flux RSS
+      par titre au déploiement ; sinon lecture hebdomadaire manuelle.
+
+  # ---------------------------------------------------------------------------
+  # D. PROMOTION DES INVESTISSEMENTS & CLIMAT DES AFFAIRES
+  # ---------------------------------------------------------------------------
+  - id: edbm
+    nom: "EDBM – Economic Development Board of Madagascar"
+    categorie: investissements
+    type: html
+    url: "https://www.edbm.mg/"
+    selecteurs:
+      liens: "a[href*='edbm.mg/'], article a"
+    priorite: 5
+    frequence: hebdomadaire
+    statut: a_valider
+    domaines_defaut: [promotion_investissements]
+    commentaire: >
+      Réformes du climat des affaires, guichet unique, baromètre EDBM,
+      opportunités sectorielles. Source pivot du domaine investissements.
+
+  - id: one_environnement
+    nom: "ONE – Office National de l'Environnement (EIES, consultations)"
+    categorie: investissements
+    type: html
+    url: "https://one.gov.mg/"
+    selecteurs:
+      liens: "a[href*='one.gov.mg/'], article a"
+    priorite: 3
+    frequence: mensuelle
+    statut: a_valider
+    domaines_defaut: [promotion_investissements, etudes_recherches]
+    commentaire: >
+      Programmes environnementaux (ex. EP3) et études d'impact : signal
+      avancé des investissements structurants et des études associées.
+
+  - id: cci_madagascar
+    nom: "CCI Madagascar – actualités & opportunités d'affaires"
+    categorie: investissements
+    type: manuel
+    url: "https://www.cci.mg/"
+    priorite: 2
+    frequence: mensuelle
+    statut: manuel
+    domaines_defaut: [promotion_investissements]
